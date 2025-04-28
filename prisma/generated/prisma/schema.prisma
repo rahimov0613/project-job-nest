@@ -1,0 +1,483 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum userstatus {
+  active
+  inactive
+}
+
+enum skillsstatus {
+  beginner
+  intermediate
+  advanced
+  expert
+}
+
+enum proficiencylanguages {
+  basic
+  conversational
+  fluent
+  native
+}
+
+enum companySize {
+  SIZE_1_10
+  SIZE_11_50
+  SIZE_51_200
+  SIZE_201_500
+  SIZE_501_1000
+  SIZE_1001_5000
+  SIZE_5000_PLUS
+}
+
+enum jobType {
+  full_time
+  part_time
+  contact
+  temporary
+  intership
+  remote
+}
+
+enum salaryPeriod {
+  hourly
+  weekly
+  monthly
+  yearly
+}
+
+enum visaSponsorship {
+  none
+  possible
+  available
+}
+
+enum expLevel {
+  entry
+  mid
+  senior
+  execution
+}
+
+enum jobStatus {
+  draft
+  published
+  closed
+}
+
+enum jobRequirements {
+  skill
+  educaiton
+  experience
+  languages
+  certifiaction
+  other
+}
+
+enum jobBenefit {
+  health
+  housing
+  transportation
+  bonus
+  training
+  other
+}
+
+enum applicationStatus {
+  submitted
+  under_review
+  shortlisted
+  interviewing
+  rejected
+  withdrawn
+  hired
+}
+
+enum appDocumentStatus {
+  resume
+  cover_letter
+  protfolio
+  certificate
+  reference
+  other
+}
+
+enum interviewType {
+  phone
+  video
+  in_person
+  assessment
+}
+
+enum interviewStatus {
+  scheduled
+  completed
+  cancelled
+  rescheduled
+}
+
+enum contactType {
+  full_time
+  part_time
+  fixed_term
+  intership
+}
+
+enum contactSalaryPaymentPeriod {
+  hourly
+  weekly
+  monthly
+  yearly
+}
+
+enum contactStatus {
+  draft
+  active
+  terminated
+  completed
+}
+
+model users {
+  id                  Int                @id @default(autoincrement())
+  first_name          String
+  last_name           String
+  email               String
+  password_hash       String
+  phone_number        String?
+  country_code        String?
+  date_of_birth       DateTime?
+  gender              String?
+  profile_picture_url String?
+  bio                 String?
+  created_at          DateTime           @default(now())
+  updated_at          DateTime
+  last_login_at       DateTime?
+  status              userstatus         @default(active)
+  addresses           user_addresses[]
+  resumes             resumes[]
+  educations          educations[]
+  experiences         work_experiences[]
+  skills              skills[]
+  languages           languages[]
+  certifications      certifications[]
+  visa                visa_information[]
+  application         applications[]
+  contacts            contacts[]
+  notification        notifications[]
+  savedjob            saved_jobs[]
+  searches            job_searches[]
+}
+
+model user_addresses {
+  id           Int      @id @default(autoincrement())
+  user_id      Int
+  adress_line1 String
+  adress_line2 String
+  city         String
+  state        String
+  postal_code  String
+  country      String
+  is_primary   Boolean  @default(true)
+  created_at   DateTime @default(now())
+  user         users    @relation(fields: [user_id], references: [id])
+}
+
+model resumes {
+  id           Int            @id @default(autoincrement())
+  user_id      Int
+  title        String
+  file_url     String
+  is_default   Boolean        @default(false)
+  created_at   DateTime       @default(now())
+  updated_at   DateTime       @default(now())
+  applications applications[]
+  user         users          @relation(fields: [user_id], references: [id])
+}
+
+model educations {
+  id                   Int      @id @default(autoincrement())
+  user_id              Int
+  institution          String
+  degree               String
+  field_of_study       String
+  start_date           DateTime
+  end_date             DateTime
+  grade                String
+  description          String
+  is_foreign_education Boolean  @default(false)
+  country              String
+
+  user users @relation(fields: [user_id], references: [id])
+}
+
+model work_experiences {
+  id                    Int      @id @default(autoincrement())
+  user_id               Int
+  company_name          String
+  position              String
+  location              String
+  country               String
+  start_date            DateTime
+  end_date              DateTime
+  is_current_job        Boolean  @default(false)
+  description           String
+  is_foregin_experience Boolean  @default(false)
+
+  user users @relation(fields: [user_id], references: [id])
+}
+
+model skills {
+  id                 Int          @id @default(autoincrement())
+  user_id            Int
+  skill_name         String
+  proficiency        skillsstatus @default(intermediate)
+  year_of_experience Int
+  is_certifield      Boolean      @default(false)
+
+  user users @relation(fields: [user_id], references: [id])
+}
+
+model languages {
+  id          Int                  @id @default(autoincrement())
+  user_id     Int
+  languages   String
+  proficiency proficiencylanguages
+  is_primary  Boolean              @default(false)
+  user        users                @relation(fields: [user_id], references: [id])
+}
+
+model certifications {
+  id                       Int      @id @default(autoincrement())
+  user_id                  Int
+  name                     String
+  issuing_organization     String
+  issue_date               DateTime
+  expiration_date          DateTime
+  credential_id            String
+  credential_url           String
+  is_foreign_certification Boolean  @default(false)
+  user                     users    @relation(fields: [user_id], references: [id])
+}
+
+model visa_information {
+  id                Int      @id @default(autoincrement())
+  user_id           Int
+  visa_type         String
+  country           String
+  status            String
+  expiry__date      DateTime
+  is_multiple_entry Boolean  @default(false)
+  notes             String
+
+  visa users @relation(fields: [user_id], references: [id])
+}
+
+model companies {
+  id                   Int                 @id @default(autoincrement())
+  name                 String
+  description          String
+  industry             String
+  founded_year         Int
+  website_url          String
+  logo_url             String
+  headquarters_country String
+  company_siz          companySize         @default(SIZE_1_10)
+  is_verified          Boolean             @default(false)
+  created_at           DateTime            @default(now())
+  companies            company_locations[]
+  job                  jobs[]
+  contacts             contacts[]
+}
+
+model company_locations {
+  id              Int     @id @default(autoincrement())
+  company_id      Int
+  country         String
+  city            String
+  address         String
+  is_headquarters Boolean @default(false)
+  phone_number    String
+
+  companies companies @relation(fields: [company_id], references: [id])
+}
+
+model jobs {
+  id                       Int             @id @default(autoincrement())
+  company_id               Int
+  title                    String
+  description              String
+  job_category             String
+  job_type                 jobType
+  location_country         String
+  location_city            String
+  is_relocation_assistance Boolean         @default(false)
+  is_remote_possible       Boolean         @default(false)
+  salary_currency          String
+  salary_min               Int
+  salary_max               Int
+  salary_period            salaryPeriod    @default(monthly)
+  visa_sponsorship         visaSponsorship @default(none)
+  experience_level         expLevel        @default(mid)
+  education_requirement    String
+  posted_by                Int
+  status                   jobStatus
+  posted_at                DateTime        @default(now())
+  deadline                 DateTime
+  views_count              Int             @default(0)
+
+  job companies @relation(fields: [company_id], references: [id])
+
+  requirements    job_requirements[]
+  responsibilites job_responsibilites[]
+  benefits        job_benefits[]
+  application     applications[]
+  contact         contacts[]
+  savedjob        saved_jobs[]
+}
+
+model job_requirements {
+  id               Int             @id @default(autoincrement())
+  job_id           Int
+  requirement_type jobRequirements
+  requirement_text String
+  is_mandatory     Boolean         @default(true)
+  priority         Int             @default(1)
+  requirements     jobs            @relation(fields: [job_id], references: [id])
+}
+
+model job_responsibilites {
+  id                  Int    @id @default(autoincrement())
+  job_id              Int
+  responsibility_text String
+  priority            Int    @default(1)
+  responsibilites     jobs   @relation(fields: [job_id], references: [id])
+}
+
+model job_benefits {
+  id           Int        @id @default(autoincrement())
+  job_id       Int
+  benefit_type jobBenefit
+  description  String
+  benefits     jobs       @relation(fields: [job_id], references: [id])
+}
+
+model applications {
+  id           Int               @id @default(autoincrement())
+  job_id       Int
+  user_id      Int
+  resume_id    Int
+  cover_letter String
+  status       applicationStatus
+  applited_at  DateTime          @default(now())
+  updated_at   DateTime          @default(now())
+  notes        String
+
+  application  jobs    @relation(fields: [job_id], references: [id])
+  aplication   users   @relation(fields: [user_id], references: [id])
+  applications resumes @relation(fields: [resume_id], references: [id])
+
+  document  application_documents[]
+  interview interviews[]
+}
+
+model application_documents {
+  id             Int               @id @default(autoincrement())
+  application_id Int
+  document_type  appDocumentStatus
+  file_url       String
+  uploaded_at    DateTime          @default(now())
+
+  document applications @relation(fields: [application_id], references: [id])
+}
+
+model interviews {
+  id                 Int             @id @default(autoincrement())
+  application_id     Int
+  interview_type     interviewType
+  scheduled_time     DateTime
+  timezone           String
+  duration_minutes   Int             @default(30)
+  location           String
+  meeting_url        String
+  interview_name     String
+  interview_position String
+  status             interviewStatus
+  feedback           String
+  rating             Int
+  notes              String
+  created_at         DateTime        @default(now())
+  updated_at         DateTime        @default(now())
+
+  interview applications @relation(fields: [application_id], references: [id])
+}
+
+model contacts {
+  id                            Int                        @id @default(autoincrement())
+  job_id                        Int
+  user_id                       Int
+  company_id                    Int
+  contact_type                  contactType
+  start_date                    DateTime
+  end_date                      DateTime
+  probation_period_months       Int                        @default(3)
+  salary_amount                 Int
+  salary_currency               String
+  salary_payment_period         contactSalaryPaymentPeriod @default(monthly)
+  benefits_description          String
+  visa_sponsorship_details      String
+  relocation_assistance_details String
+  status                        contactStatus              @default(draft)
+  signed_at                     DateTime
+  created_at                    DateTime                   @default(now())
+  updated_at                    DateTime                   @default(now())
+
+  contact  jobs      @relation(fields: [job_id], references: [id])
+  contacts users     @relation(fields: [user_id], references: [id])
+  contac   companies @relation(fields: [company_id], references: [id])
+}
+
+model notifications {
+  id                  Int      @id @default(autoincrement())
+  user_id             Int
+  notification_type   String
+  title               String
+  message             String
+  is_read             Boolean  @default(false)
+  related_entity_type String
+  related_entity_id   Int
+  created_at          DateTime @default(now())
+
+  notification users @relation(fields: [user_id], references: [id])
+}
+
+model saved_jobs {
+  id       Int      @id @default(autoincrement())
+  user_id  Int
+  job_id   Int
+  saved_at DateTime @default(now())
+  notes    String
+
+  savedjob  users @relation(fields: [user_id], references: [id])
+  savedjobs jobs  @relation(fields: [job_id], references: [id])
+}
+
+model job_searches {
+  id               Int      @id @default(autoincrement())
+  user_id          Int
+  search_query     String
+  country          String
+  city             String
+  job_catregory    String
+  experience_level String
+  job_type         String
+  created_at       DateTime @default(now())
+
+  searches users @relation(fields: [user_id], references: [id])
+}

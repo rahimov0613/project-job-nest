@@ -176,17 +176,17 @@ model users {
 }
 
 model user_addresses {
-  id           Int      @id @default(autoincrement())
+  id           Int       @id @default(autoincrement())
   user_id      Int
   adress_line1 String
-  adress_line2 String
+  adress_line2 String?
   city         String
-  state        String
-  postal_code  String
+  state        String?
+  postal_code  String?
   country      String
-  is_primary   Boolean  @default(true)
-  created_at   DateTime @default(now())
-  user         users    @relation(fields: [user_id], references: [id])
+  is_primary   Boolean?  @default(true)
+  created_at   DateTime? @default(now())
+  user         users     @relation(fields: [user_id], references: [id])
 }
 
 model resumes {

@@ -13,14 +13,22 @@
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
-    "generate":"npx prisma generate",
-    "migrate":"npx prisma migrate dev"
+    "generate": "npx prisma generate",
+    "migrate": "npx prisma migrate dev"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
+    "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^10.0.0",
+    "@nestjs/jwt": "^11.0.0",
     "@nestjs/mapped-types": "*",
+    "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^10.0.0",
+    "bcrypt": "^5.1.1",
+    "nodemailer": "^6.10.1",
+    "otplib": "^12.0.1",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
     "prisma": "^6.6.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1"

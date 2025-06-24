@@ -15,7 +15,7 @@ async function bootstrap() {
   const documentFactory = () => SwaggerModule.createDocument(app, config.build());
   SwaggerModule.setup('api', app, documentFactory(),)
 
-
+  
 
   app.useGlobalPipes(new ValidationPipe({
     whitelist: true,
@@ -26,5 +26,8 @@ async function bootstrap() {
     },
   }));
   await app.listen(process.env.PORT ?? 3000);
+
+
+  console.log(`API documentation available at: http://localhost:${process.env.PORT ?? 3000}/api`);
 }
 bootstrap();
